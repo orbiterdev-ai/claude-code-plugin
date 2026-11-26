@@ -1,7 +1,7 @@
 {
   "name": "orbiter-dev",
   "version": "1.1.3",
-  "description": "Approve or deny your AI coding agent's risky actions from your phone, with receipts. Adds an enforced PermissionRequest gate (hook) plus the Orbiter MCP tools to Claude Code.",
+  "description": "Approve or deny your AI agents' risky actions from your phone (iOS & Android biometrics), with receipts. Adds an enforced PermissionRequest gate (hook) plus the Orbiter MCP tools to Claude Code.",
   "author": {
     "name": "Orbiter Dev",
     "url": "https://orbiterdev.ai"

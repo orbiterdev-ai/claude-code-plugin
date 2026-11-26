@@ -11,7 +11,7 @@ which share plugin config). It bundles:
   Android biometrics) on the phone. Enforced means enforced: the harness runs the hook
   whether or not the model cooperates.
 - **Orbiter MCP tools** - `request_approval`, pairing, and mobile alerts via the published
-  `@orbiterdev/mcp-server@0.1.13` package.
+  `@orbiterdev/mcp-server` package.
 - **Commands** - `/approve` (create an approval for the current action) and `/status`.
 
 ## Install
@@ -23,18 +23,18 @@ claude plugin install orbiter-dev@orbiter
 ```
 
 Then pair with your phone (once): open the **Orbiter Dev mobile app (iOS and Android) -> Settings -> Pair IDE**
-and follow the prompt, or run `npx -y @orbiterdev/mcp-server@0.1.13 claude doctor
+and follow the prompt, or run `npx -y @orbiterdev/mcp-server claude doctor
 --check-backend` to verify `credentials_present: true`.
 
 **Restart Claude Code after install** - hook and permission config is cached per session.
 
 ## Migrating from the npx setup
 
-If you previously ran `npx @orbiterdev/mcp-server@0.1.13 claude setup`, remove that wiring so you
+If you previously ran `npx @orbiterdev/mcp-server claude setup`, remove that wiring so you
 don't get double approval prompts:
 
 ```bash
-npx -y @orbiterdev/mcp-server@0.1.13 claude uninstall --scope both
+npx -y @orbiterdev/mcp-server claude uninstall --scope both
 ```
 
 The plugin replaces both the hook and the MCP server registration. Your pairing credential
