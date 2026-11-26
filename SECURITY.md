@@ -1,46 +1,21 @@
-# Security Policy
+# Security Policy - Orbiter Dev Claude Code Plugin
 
-## Supported Versions
+## Enterprise Hardening Invariants
 
-Security updates are provided for the latest release line of `orbiter-plugin`:
+The Orbiter Dev Claude Code hook runner (`hooks/orbiter-plugin-hook.cjs`) is a self-contained, zero-dependency Node.js (`>=18`) fail-closed enforcement engine implementing 11 verified security controls:
 
-| Version | Supported |
-|---------|-----------|
-| `1.1.x` | Yes |
-| `< 1.1.0` | No |
+1. **No self-hook substring bypass:** Loop prevention matches explicit Orbiter MCP tool names only, never command strings or argument substrings.
+2. **Cross-platform destructive command detection:** Enforces explicit flag boundaries across POSIX, PowerShell (`Remove-Item -Recurse -Force`, `Format-Volume`, `Clear-Disk`, `Initialize-Disk`, `Stop-Computer`, `Restart-Computer`), Windows `del`/`rmdir`, SQL, Git, Terraform, Kubernetes, and cloud CLIs.
+3. **SSRF and credential-exfiltration protection:** `ORBITER_API_URL` / `ORBITER_SERVER_URL` is restricted to `https://` (or explicit loopback `http://127.0.0.1`, `http://localhost`, `http://[::1]` for local development) with zero embedded credentials, zero query/fragment parameters, and `redirect: "error"`.
+4. **Shell-chaining and exfiltration blocking:** Rejects shell metacharacters (`;`, `&`, `|`, `` ` ``, `$`, `<`, `>`, `(`, `)`, newlines, null bytes) and unsafe `git -c`/`--ext-diff`/`--exec-path` flags on the fast-path. Detects pipe-to-shell, decode-to-exec, `nc`/`/dev/tcp/` exfiltration, separate-flag `rm -r -f`, unfiltered `DELETE FROM`, and array command inputs.
+5. **Strict safe-read boundary and credential detection:** Excludes `find`, `awk`, and `sed` from safe-read shell whitelists. Detects `.env`, `.ssh/`, `.aws/`, `.gnupg/`, `.kube/config`, `.docker/config.json`, `.orbiter/`, `.npmrc`, `.pypirc`, `.netrc`, `.git-credentials`, `id_ed25519`/`id_rsa`, `credentials`, `secrets`, `.pem`/`.key`/`.p8`, and `/etc/shadow` across `Read`, `Glob`, `Grep`, `Bash`, `Write`, `Edit`, and MCP tools.
+6. **Path traversal and workspace isolation:** Canonicalizes paths with drive-aware `path.posix.normalize()` against `cwd`. Any `..`, `~/`, or out-of-workspace path blocks fast-path allow on both read and write tools.
+7. **Secret redaction and Zero Data Mode:** Strips Bearer/Basic headers, API keys, JWTs, PEM private keys, env assignments, URL userinfo, and active `ORBITER_API_KEY`/`ORBITER_TOKEN` values from payloads, `stdout`, `stderr`, and errors. Set `ORBITER_ZERO_DATA_MODE=1` to withhold raw tool arguments locally.
+8. **DoS and malformed input resilience:** Enforces a `2 MiB` stdin cap with early abort, maximum JSON nesting depth (`64`), raw and escaped null-byte rejection, depth-capped serialization, strict `tool_name` / `tool_input` validation, zero `eval`, and deterministic fail-closed `deny` output on every error path.
+9. **Zero shell-wrapper / npx attack surface:** Runs directly on built-in Node.js `>=18` APIs with zero external npm dependencies and no `shell: true` subprocess invocation.
+10. **Supply-chain hygiene:** Uniform LF line endings, automated E2E + adversarial security test suite in CI, and MIT Gitleaks `v8.30.1` CLI scanning pinned by SHA-256.
+11. **Zero telemetry by default:** `PostToolUse` and `Stop` hooks transmit zero telemetry unless `ORBITER_CLAUDE_REPORT_TELEMETRY=true` is explicitly configured.
 
 ## Reporting a Vulnerability
 
-Please do **not** open a public GitHub issue for security vulnerabilities.
-
-Report suspected security issues privately by emailing **[support@orbiterdev.ai](mailto:support@orbiterdev.ai)** with the subject line `[SECURITY] orbiter-plugin: <short summary>`.
-
-Include as much of the following as possible:
-
-- Affected plugin version, Claude Code version, and operating system
-- Reproduction steps or minimal sanitized hook payload
-- Potential impact and any suggested remediation
-
-## Response SLA
-
-- **Initial acknowledgment:** within 24 business hours
-- **Triage and severity confirmation:** within 72 hours
-- **Target remediation timelines:**
-  - Critical severity: within 7 days
-  - High severity: within 14 days
-  - Moderate severity: within 30 days
-- **Coordinated disclosure:** we coordinate public advisories and credit researchers once a fix is released (unless anonymity is requested).
-
-## Security Architecture & Trust Boundary
-
-`orbiter-plugin` enforces human-in-the-loop sign-off outside the AI agent's reasoning loop:
-
-- **Deterministic harness gate:** the `PermissionRequest` hook runs in the Claude Code host harness rather than relying on model compliance.
-- **Out-of-band mobile biometric boundary:** high-risk approvals require explicit biometric confirmation on the paired Orbiter Dev mobile app (iOS Face ID or Android biometrics) over TLS.
-- **Input redaction before egress:** secrets, tokens, and PEM key blocks are redacted locally before approval summaries are sent to `https://api.orbiterdev.ai`.
-- **No silent auto-approval on failure:** if the backend or package runner is unavailable, the hook falls back to Claude Code's native permission prompt rather than silently allowing execution.
-
-## Scope Exclusions
-
-- Vulnerabilities inside Claude Code itself (report those directly to Anthropic)
-- Attacks requiring an adversary with existing local write access to `~/.claude/` or `~/.orbiter/`
+Email **info@orbiterdev.ai** with reproduction steps and affected versions. Do not open public issues for undisclosed security vulnerabilities.

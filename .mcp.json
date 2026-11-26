@@ -1,13 +1,8 @@
 {
   "mcpServers": {
     "orbiter-dev": {
-      "command": "npx",
-      "args": ["-y", "@orbiterdev/mcp-server@0.1.13"],
-      "env": {
-        "ORBITER_SERVER_URL": "https://api.orbiterdev.ai",
-        "ORBITER_CREDENTIAL_PROFILE": "claude-code",
-        "ORBITER_IDE_NAME": "Claude Code"
-      }
+      "type": "http",
+      "url": "https://mcp.orbiterdev.ai/mcp"
     }
   }
 }

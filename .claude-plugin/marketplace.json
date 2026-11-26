@@ -1,0 +1,27 @@
+{
+  "name": "orbiter",
+  "owner": {
+    "name": "Orbiter Dev",
+    "url": "https://orbiterdev.ai"
+  },
+  "metadata": {
+    "description": "Official Orbiter Dev plugin marketplace for Claude Code: fail-closed PreToolUse and PermissionRequest hooks plus Hosted OAuth 2.1 MCP for one-tap iOS and Android biometric sign-off.",
+    "version": "1.2.0"
+  },
+  "plugins": [
+    {
+      "name": "orbiter-dev",
+      "source": "./",
+      "description": "One-tap human sign-off on iOS and Android (Face ID and Android biometrics) when AI agents take real-world action in Claude Code.",
+      "version": "1.2.0",
+      "author": {
+        "name": "Orbiter Dev",
+        "url": "https://orbiterdev.ai"
+      },
+      "homepage": "https://orbiterdev.ai/setup",
+      "repository": "https://github.com/orbiterdev-ai/claude-code-plugin",
+      "license": "MIT",
+      "category": "security"
+    }
+  ]
+}
