@@ -1,6 +1,6 @@
 {
   "name": "orbiter-dev",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "One-tap human sign-off on iOS and Android (Face ID and Android biometrics) when AI agents take real-world action in Claude Code. Bundles zero-dependency PreToolUse and PermissionRequest hooks plus Hosted OAuth 2.1 MCP.",
   "author": {
     "name": "Orbiter Dev",

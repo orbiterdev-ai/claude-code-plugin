@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * Orbiter Dev - Self-Contained Claude Code Lifecycle Hook Runner (v1.2.0)
+ * Orbiter Dev - Self-Contained Claude Code Lifecycle Hook Runner (v1.2.1)
  *
  * Requirements:
  * - Node.js >= 18 (uses built-in fetch, node:crypto, node:fs, node:os, node:path)
@@ -29,13 +29,14 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const PLUGIN_VERSION = '1.2.0';
+const PLUGIN_VERSION = '1.2.1';
 const DEFAULT_API_URL = 'https://api.orbiterdev.ai';
 const DEFAULT_TIMEOUT_SECONDS = 300;
 const DEFAULT_POLL_INTERVAL_MS = 2000;
 const SETUP_URL = 'https://orbiterdev.ai/setup';
 const MAX_STDIN_BYTES = 2 * 1024 * 1024;
 const MAX_JSON_DEPTH = 64;
+const MAX_CREDENTIAL_FILE_BYTES = 64 * 1024;
 
 const RISK_ORDER = { low: 0, medium: 1, high: 2, critical: 3 };
 const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1', '[::1]']);
@@ -137,6 +138,8 @@ const INFRA_WRITE_PATH_PATTERNS = [
   /(?:^|[\\/])migrations?[\\/]/i,
   /(?:^|[\\/])hooks[\\/].*hook\.cjs(?=$|[\s"'`])/i,
   /(?:^|[\\/])\.git(?:[\\/]|$)/i,
+  /\.tf(?:\s|$|["'])/i,
+  /Dockerfile(?:\s|$|["'])/i,
 ];
 
 const CRITICAL_PATTERNS = [
@@ -1913,7 +1916,10 @@ function loadCredentialFile(env) {
 
   for (const filePath of candidates) {
     try {
-      if (!fs.existsSync(filePath)) continue;
+      const stat = fs.lstatSync(filePath);
+      if (!stat.isFile() || stat.isSymbolicLink() || stat.size > MAX_CREDENTIAL_FILE_BYTES) {
+        continue;
+      }
       const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
       const token = isRecord(parsed)
         ? (typeof parsed.api_key === 'string' && parsed.api_key.trim())

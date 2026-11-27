@@ -193,7 +193,7 @@ test('1. Claude Code plugin.json, marketplace.json, .mcp.json, hooks.json, comma
   const hooksConfig = readJson(path.join('hooks', 'hooks.json'));
 
   assert.equal(pluginManifest.name, 'orbiter-dev');
-  assert.equal(pluginManifest.version, '1.2.0');
+  assert.equal(pluginManifest.version, '1.2.1');
   assert.equal(pluginManifest.license, 'MIT');
   assert.equal(pluginManifest.repository, 'https://github.com/orbiterdev-ai/claude-code-plugin');
   assert.equal(pluginManifest.hooks, undefined, 'Claude Code auto-discovers hooks/hooks.json; plugin.json must not duplicate hooks');
@@ -206,13 +206,21 @@ test('1. Claude Code plugin.json, marketplace.json, .mcp.json, hooks.json, comma
   assert.equal(marketplace.plugins[0].source, './');
   assert.equal(marketplace.plugins[0].repository, 'https://github.com/orbiterdev-ai/claude-code-plugin');
 
-  // CI workflow pins every GitHub Action to an immutable 40-char commit SHA (F15)
-  const ciYaml = fs.readFileSync(path.join(PLUGIN_ROOT, '.github', 'workflows', 'security.yml'), 'utf8');
+  // CI and CodeQL v4 workflows pin every GitHub Action to an immutable 40-char commit SHA (F15)
+  const ciYaml = fs.readFileSync(path.join(PLUGIN_ROOT, '.github', 'workflows', 'ci.yml'), 'utf8');
   const usesLines = [...ciYaml.matchAll(/uses:\s*([^\s#]+)/g)].map((m) => m[1]);
-  assert.ok(usesLines.length >= 3, 'security.yml must pin all action invocations');
+  assert.ok(usesLines.length >= 3, 'ci.yml must pin all action invocations');
   for (const ref of usesLines) {
     assert.match(ref, /^[^@]+@[0-9a-f]{40}$/, `Action ref must be pinned to 40-char commit SHA: ${ref}`);
   }
+  const codeqlYaml = fs.readFileSync(path.join(PLUGIN_ROOT, '.github', 'workflows', 'codeql.yml'), 'utf8');
+  const codeqlUses = [...codeqlYaml.matchAll(/uses:\s*([^\s#]+)/g)].map((m) => m[1]);
+  assert.ok(codeqlUses.length >= 3, 'codeql.yml must pin all action invocations');
+  for (const ref of codeqlUses) {
+    assert.match(ref, /^[^@]+@[0-9a-f]{40}$/, `CodeQL action ref must be pinned to 40-char commit SHA: ${ref}`);
+  }
+  assert.match(codeqlYaml, /github\/codeql-action\/init@915412ff23e8b7659517e607487dbeae018f2934/);
+  assert.match(codeqlYaml, /github\/codeql-action\/analyze@915412ff23e8b7659517e607487dbeae018f2934/);
 
   assert.equal(mcpConfig.mcpServers['orbiter-dev'].type, 'http');
   assert.equal(mcpConfig.mcpServers['orbiter-dev'].url, 'https://mcp.orbiterdev.ai/mcp');

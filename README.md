@@ -74,6 +74,17 @@ node --test tests/e2e_claude_plugin.test.js
 - **Free:** `€0` - 50 mobile approvals per week
 - **Pro:** `€19.99/mo` (or `€219.99/yr` annual) - unlimited mobile approvals and audit history
 
-Website: https://orbiterdev.ai | Setup: https://orbiterdev.ai/setup | Docs: https://orbiterdev.ai/docs | Security: [SECURITY.md](SECURITY.md)
+## Orbiter Dev Official Plugin Ecosystem
+
+All four official Orbiter Dev agent plugins share the same zero-dependency fail-closed security engine, Hosted OAuth 2.1 MCP endpoint (`https://mcp.orbiterdev.ai/mcp`), SHA-pinned CI and CodeQL v4 verification, and dual-OS mobile biometric sign-off (iOS Face ID and Android biometrics):
+
+| Platform | Official Plugin Repository |
+| :--- | :--- |
+| **Claude Code** | [orbiterdev-ai/claude-code-plugin](https://github.com/orbiterdev-ai/claude-code-plugin) |
+| **Cursor 3** | [orbiterdev-ai/cursor-plugin](https://github.com/orbiterdev-ai/cursor-plugin) |
+| **OpenAI Codex & ChatGPT** | [orbiterdev-ai/codex-plugin](https://github.com/orbiterdev-ai/codex-plugin) |
+| **Google Antigravity** | [orbiterdev-ai/antigravity-plugin](https://github.com/orbiterdev-ai/antigravity-plugin) |
+
+Website: https://orbiterdev.ai | Setup: https://orbiterdev.ai/setup | Docs: https://orbiterdev.ai/docs | Security: [SECURITY.md](SECURITY.md) | License: [MIT](LICENSE)
 
 MIT License - Copyright 2026 Orbiter Dev.
